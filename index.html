@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Akash's Yahtzee Project</title>
+  <meta name="author" content="You">
+  <meta name="description" content="A digital version of the classic Yahtzee dice game">
+  <meta content="text/html" http-equiv="Content-type" />
+  <meta content="width=device-width, initial-scale=1" name="viewport" />
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+
+<body>
+  <header>
+    <h1 class = 'rainbow'>Welcome to Akash's Yahtzee Project! Hope you enjoy! </h1>
+  </header>
+  <section id="dice-section">
+    <table>
+      <tr>
+        <td><img id="die-0" class="blank die unreserved" src="images/blank.svg" width="70" /></td>
+        <td><img id="die-1" class="blank die unreserved" src="images/blank.svg" width="70" /></td>
+        <td><img id="die-2" class="blank die unreserved" src="images/blank.svg" width="70" /></td>
+        <td><img id="die-3" class="blank die unreserved" src="images/blank.svg" width="70" /></td>
+        <td><img id="die-4" class="blank die unreserved" src="images/blank.svg" width="70" /></td>
+      </tr>
+      <tr>
+        <td colspan="2">Rolls remaining: <span id="rolls-remaining-content">3</span></td>
+        <td colspan="3"><button id="roll-dice-button" type="button">Roll the Dice!</button></td>
+      </tr>
+      <tr>
+        <td colspan="5">High Score: <span id="highscore-content"></span></td>
+      </tr>
+    </table>
+  </section>
+  <section id="user-feedback" class="hidden">
+    <span id="user-feedback-content"></span>
+  </section>
+  <section id="scorecard">
+    <div id="upper-scorecard">
+      <table>
+        <tr>
+          <th class="scorecard-header upper-scorecard">UPPER SECTION</th>
+          <th class="scorecard-header upper-scorecard">HOW TO SCORE</th>
+          <th class="scorecard-header upper-scorecard">SCORE SUGGESTION</th>
+          <th class="scorecard-header upper-scorecard">GAME #1</th>
+          <!-- <th class="scorecard-header upper-scorecard">GAME #2</th> -->
+        </tr>
+        <tr>
+          <td class="ones category upper-scorecard" id="ones-category">Ones <img src="images/one.svg" width="20" /> = 1</td>
+          <td class="ones description upper-scorecard" id="ones-description">Count and Add Only Ones</td>
+          <td class="ones suggestion upper-scorecard" id="ones-suggestion"></td>
+          <td class="ones score upper-scorecard" id="ones-score"><input type="text" class = "score-value" id="ones-score-value"></td>
+          <!--<td class="p2 ones score upper-scorecard" id="ones-score-1"><input type="text" class = "score-value" id="ones-score-value-1"></td> -->
+        </tr>
+        <tr>
+          <td class="twos category upper-scorecard" id="twos-category">Twos <img src="images/two.svg" width="20" /> = 2</td>
+          <td class="twos description upper-scorecard" id="twos-description">Count and Add Only Twos</td>
+          <td class="twos suggestion upper-scorecard" id="twos-suggestion"></td>
+          <td class="twos score upper-scorecard" id="twos-score"><input type="text" class = "score-value" id="twos-score-value"></td>
+        </tr>
+        <tr>
+          <td class="threes category upper-scorecard" id="threes-category">Threes <img src="images/three.svg" width="20" /> = 3</td>
+          <td class="threes description upper-scorecard" id="threes-description">Count and Add Only Threes</td>
+          <td class="threes suggestion upper-scorecard" id="threes-suggestion"></td>
+          <td class="threes score upper-scorecard" id="threes-score"><input type="text" class = "score-value" id="threes-score-value"></td>
+        </tr>
+        <tr>
+          <td class="fours category upper-scorecard" id="fours-category">Fours <img src="images/four.svg" width="20" /> = 4</td>
+          <td class="fours description upper-scorecard" id="fours-description">Count and Add Only Fours</td>
+          <td class="fours suggestion upper-scorecard" id="fours-suggestion"></td>
+          <td class="fours score upper-scorecard" id="fours-score"><input type="text" class = "score-value" id="fours-score-value"></td>
+        </tr>
+        <tr>
+          <td class="fives category upper-scorecard" id="fives-category">Fives <img src="images/five.svg" width="20" /> = 5</td>
+          <td class="fives description upper-scorecard" id="fives-description">Count and Add Only Fives</td>
+          <td class="fives suggestion upper-scorecard" id="fives-suggestion"></td>
+          <td class="fives score upper-scorecard" id="fives-score"><input type="text" class = "score-value" id="fives-score-value"></td>
+        </tr>
+        <tr>
+          <td class="sixes category upper-scorecard" id="sixes-category">Sixes <img src="images/six.svg" width="20" /> = 6</td>
+          <td class="description sixes upper-scorecard" id="sixes-description">Count and Add Only Sixes</td>
+          <td class="sixes suggestion upper-scorecard" id="sixes-suggestion"></td>
+          <td class="score sixes upper-scorecard" id="sixes-score"><input type="text" class = "score-value" id="sixes-score-value"></td>
+        </tr>
+        <tr>
+          <td class="category upper-scorecard summary" id="upper-scorecard-category">TOTAL SCORE</td>
+          <td class="description upper-scorecard" id="upper-scorecard-description"> -- </td>
+          <td class="suggestion upper-scorecard" id="upper-total-score-suggestion"> -- </td>
+          <td class="score upper-scorecard total score-value" id="upper-scorecard-score"></td>
+        </tr>
+        <tr>
+          <td class="category upper-scorecard summary" id="upper-scorecard-bonus-category">BONUS</td>
+          <td class="description upper-scorecard" id="upper-scorecard-bonus-description"> If total score is more than 63, score 35 </td>
+          <td class="suggestion upper-scorecard" id="bonus-suggestion"> -- </td>
+          <td class="score upper-scorecard total score-value" id="upper-scorecard-bonus-score"></td>
+        </tr>
+        <tr>
+          <td class="category upper-scorecard summary" id="upper-scorecard-total-category">TOTAL</td>
+          <td class="description upper-scorecard" id="upper-scorecard-total-description"> of upper section </td>
+          <td class="suggestion upper-scorecard" id="upper-total-suggestion"> -- </td>
+          <td class="score upper-scorecard total score-value" id="upper-scorecard-total-score"></td>
+        </tr>
+      </table>
+    </div>
+    <div id="lower-scorecard">
+      <table>
+        <tr>
+          <th class="scorecard-header lower-scorecard">LOWER SECTION</th>
+          <th class="scorecard-header lower-scorecard">HOW TO SCORE</th>
+          <th class="scorecard-header lower-scorecard">SCORE SUGGESTION</th>
+          <th class="scorecard-header lower-scorecard"></th>
+        </tr>
+        <tr>
+          <td class="category 3-of-a-kind lower-scorecard" id="3-of-a-kind-category">3 of a kind</td>
+          <td class="description 3-of-a-kind lower-scorecard" id="3-of-a-kind-description">Add Total of All Dice</td>
+          <td class="suggestion 3-of-a-kind lower-scorecard" id="3-of-a-kind-suggestion"></td>
+          <td class="score 3-of-a-kind lower-scorecard" id="3-of-a-kind-category-score"><input type="text" class = "score-value" id="3-of-a-kind-score-value"></td>
+        </tr>
+        <tr>
+          <td class="category 4-of-a-kind lower-scorecard" id="4-of-a-kind-category">4 of a kind</td>
+          <td class="description 4-of-a-kind lower-scorecard" id="4-of-a-kind-description">Add Total of All Dice</td>
+          <td class="suggestion 4-of-a-kind lower-scorecard" id="4-of-a-kind-suggestion"></td>
+          <td class="score 4-of-a-kind lower-scorecard" id="4-of-a-kind-score"><input type="text" class = "score-value" id="4-of-a-kind-score-value"></td>
+        </tr>
+        <tr>
+          <td class="category full-house lower-scorecard" id="full-house-category">Full House</td>
+          <td class="description full-house lower-scorecard" id="full-house-description">Score 25</td>
+          <td class="suggestion full-house lower-scorecard" id="full-house-suggestion"></td>
+          <td class="score full-house lower-scorecard" id="full-house-score"><input type="text" class = "score-value" id="full-house-score-value"></td>
+        </tr>
+        <tr>
+          <td class="category small-straight lower-scorecard" id="small-straight-category">Small Straight (Sequence of 4)</td>
+          <td class="description small-straight lower-scorecard" id="small-straight-description">Score 30</td>
+          <td class="suggestion small-straight lower-scorecard" id="small-straight-suggestion"></td>
+          <td class="score small-straight lower-scorecard" id="small-straight-score"><input type="text" class = "score-value" id="small-straight-score-value"></td>
+        </tr>
+        <tr>
+          <td class="category large-straight lower-scorecard" id="large-straight-category">Large Straight (Sequence of 5)</td>
+          <td class="description large-straight lower-scorecard" id="large-straight-description">Score 40</td>
+          <td class="suggestion large-straight lower-scorecard" id="large-straight-suggestion"></td>
+          <td class="score large-straight lower-scorecard" id="large-straight-score"><input type="text" class = "score-value" id="large-straight-score-value"></td>
+        </tr>
+        <tr>
+          <td class="category yahtzee lower-scorecard" id="yahtzee-category">YAHTZEE (5 of a kind)</td>
+          <td class="description yahtzee lower-scorecard" id="yahtzee-description">Score 50</td>
+          <td class="suggestion yahtzee lower-scorecard" id="yahtzee-suggestion"></td>
+          <td class="score yahtzee lower-scorecard" id="yahtzee-score"><input type="text" class = "score-value" id="yahtzee-score-value"></td>
+        </tr>
+        <tr>
+          <td class="category yahtzee-bonus lower-scorecard" id="yahtzee-category">Yahtzee Bonus</td>
+          <td class="description yahtzee-bonus lower-scorecard" id="yahtzee-bonus-description">Score 100 for each additional Yahtzee</td>
+          <td class="suggestion yahtzee-bonus lower-scorecard" id="yahtzee-bonus-suggestion"> -- </td>
+          <td class="score yahtzee-bonus lower-scorecard score-value" id="yahtzee-bonus-score-value"></td>
+        </tr>
+        <tr>
+          <td class="category chance lower-scorecard" id="chance-category">Chance </td>
+          <td class="description chance lower-scorecard" id="chance-description">Score Total of all 5 Dice</td>
+          <td class="suggestion chance lower-scorecard" id="chance-suggestion"></td>
+          <td class="score chance lower-scorecard" id="chance-score"><input type="text" class = "score-value" id="chance-score-value"></td>
+        </tr>
+        <tr>
+          <td class="category summary lower-scorecard" id="lower-scorecard-total-category">Total (Of Lower Section) </td>
+          <td class="description lower-scorecard" id="lower-scorecard-total-description"></td>
+          <td class="suggestion lower-scorecard" id="lower-scorecard-total-suggestion"> -- </td>
+          <td class="score total lower-scorecard score-value" id="lower-scorecard-total-score"></td>
+        </tr>
+        <tr>
+          <td class="category summary lower-scorecard" id="bottom-upper-score-total-category">Total (Of Upper Section)</td>
+          <td class="description lower-scorecard" id="bottom-upper-score-total-description"></td>
+          <td class="suggestion lower-scorecard" id="bottom-upper-score-total-suggestion"> -- </td>
+          <td class="score total lower-scorecard score-value" id="bottom-upper-score-total"></td>
+        </tr>
+        <tr>
+          <td class="category summary lower-scorecard" id="grand-total-category">Grand Total </td>
+          <td class="description lower-scorecard" id="grand-total-description"></td>
+          <td class="suggestion lower-scorecard" id="grand-total-suggestion"> -- </td>
+          <td class="score total lower-scorecard score-value" id="grand-total"></td>
+        </tr>
+      </table>
+    </div>
+  </section>
+  <section id="save-load-new-game">
+    Game Name:<input type="text" id="game-name-value">
+    <button id="save-game-button" type="button">Save Game</button>
+    <button id="load-game-button" type="button">Load Game</button>
+    <button id="new-game-button" type="button">New Game</button>
+  </section>
+  <footer>
+    <h6><img src="https://upload.wikimedia.org/wikipedia/en/4/43/Trinity_School_logo.png" width="30" />Brought to you by the cool kid Akash Kumar in CS Topics, 2020</h6>
+  </footer>
+  <script src="js/scripts.js"></script>
+</body>
+
+</html>
