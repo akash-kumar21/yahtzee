@@ -55,6 +55,14 @@ function setDice(d1, d2, d3, d4, d5) {
 }//setDice
 
 
+function areDiceRolled() {
+  for (let die of dice_elements) {
+    if (die.getAttribute('src') === 'images/blank.svg' || die.getAttribute('src').substring(0,15) === 'images/spinning') {
+      return false;
+    }
+  }
+  return true;
+}
 
 
 /**
@@ -63,7 +71,7 @@ function setDice(d1, d2, d3, d4, d5) {
  *
  */
 function disableCategory() {
-  if (event.keyCode === 13) {//if the key that was pressed was 'enter'
+  if (event.keyCode === 13  && areDiceRolled() === true) {//if the key that was pressed was 'enter'
     let el = event.target;
     let id = event.target.id;
     let score = event.target.value;
@@ -75,6 +83,9 @@ function disableCategory() {
       highScore();
       if (document.getElementById('yahtzee-score-value').disabled) {
         isYahtzeeBonus = true;
+      }
+      if (isGameOver()) {
+        provideFeedback(`Congratulations on finishing the game with a grand total of ${document.getElementById('grand-total').innerHTML} points! I hope you had fun!`, 'good');
       }
     }//score was valid
     else {//score was not valid
@@ -115,6 +126,7 @@ function updatesTotals() {
     grandSum += 35;
     document.getElementById("upper-scorecard-bonus-score").innerHTML = 35;
   }
+  //only allow yahtzee bonus if they got 50 in yahtzee
   if (isYahtzeeBonus === true && document.getElementById('yahtzee-score-value').disabled === true && document.getElementById('yahtzee-score-value').value === '50' && JSON.stringify(diceContent(diceToArray()).sort()) === JSON.stringify([0,0,0,0,0,5])) {
     let x = document.getElementById('yahtzee-bonus-score-value').innerHTML;
     x *= 1;
@@ -125,9 +137,9 @@ function updatesTotals() {
   yahtzeeBonusScore *= 1;
   document.getElementById("upper-scorecard-score").innerHTML = upperSumNoBonus;
   document.getElementById("upper-scorecard-total-score").innerHTML = upperSum;
-  document.getElementById("lower-scorecard-total-score").innerHTML = lowerSum + yahtzeeBonusScore;
+  document.getElementById("lower-scorecard-total-score").innerHTML = (lowerSum + yahtzeeBonusScore);
   document.getElementById("bottom-upper-score-total").innerHTML = upperSum;
-  document.getElementById("grand-total").innerHTML = grandSum + yahtzeeBonusScore;
+  document.getElementById("grand-total").innerHTML = (grandSum + yahtzeeBonusScore);
 }//updatesTotals
 
 
@@ -429,7 +441,7 @@ function saveGame() {
       object[cat] = document.getElementById(cat + '-score-value').value;
     }
     object['rolls-remaining-content'] = document.getElementById('rolls-remaining-content').innerHTML; //save number of rolls remaining
-    for (let die of dice_elements) {//save what faces the dice were
+    for (let die of dice_elements) {//save what faces the dice were and if they're reserved or not
       object[die.id + '-src'] = die.getAttribute('src');
       if (die.classList.contains('reserved')) {
         object[die.id + '-isReserved'] = 'reserved';
@@ -438,6 +450,7 @@ function saveGame() {
         object[die.id + '-isReserved'] = 'unreserved';
       }
     }
+    object['isYahtzeeBonus'] = isYahtzeeBonus;
     localStorage.setItem(document.getElementById('game-name-value').value, JSON.stringify(object));
     provideFeedback(`You have successfuly saved a game called "${document.getElementById('game-name-value').value}"!`, 'good');
   }
@@ -456,10 +469,12 @@ function saveGame() {
 function loadGame() {
   let gameName = document.getElementById('game-name-value').value;
   let game = JSON.parse(localStorage.getItem(gameName));
+
   if (game === null) {
     provideFeedback(`There is no saved game called "${gameName}".`, 'bad');
   }
   else {
+    newGame();
     let areDiceRolled = false;
     for (category in game) {
       let score = game[category];
@@ -489,6 +504,7 @@ function loadGame() {
           areDiceRolled = true;
         }
       }//dice roll
+      isYahtzeeBonus = game['isYahtzeeBonus'];
     }//loop through each key-value pair in the game object
 
     updatesTotals();
@@ -517,11 +533,13 @@ function newGame() {
   resetDice();
   document.getElementById("upper-scorecard-bonus-score").innerHTML = '';
   document.getElementById("upper-scorecard-score").innerHTML = '';
+  document.getElementById("yahtzee-bonus-score-value").innerHTML = '';
   document.getElementById("upper-scorecard-total-score").innerHTML = '';
   document.getElementById("lower-scorecard-total-score").innerHTML = '';
   document.getElementById("bottom-upper-score-total").innerHTML = '';
   document.getElementById("grand-total").innerHTML = '';
   document.getElementById("game-name-value").value = '';
+  isYahtzeeBonus = false;
   provideFeedback("A new game has started!", "good");
 }//newGame
 
