@@ -9,7 +9,7 @@ const category_ids = {//object of strings
 const all_category_ids = ['ones', 'twos', 'threes', 'fours', 'fives', 'sixes', "3-of-a-kind", "4-of-a-kind", "full-house", "small-straight", "large-straight", "yahtzee", "chance"];
 const dice_elements = document.getElementsByClassName("die"); //node list of html elements
 const dice_faces = ["one", "two", "three", "four", "five", "six"];
-const dice_faces2 = ["one", "two", "three", "four", "five", "sixe"];
+const dice_faces2 = ["one", "two", "three", "four", "five", "sixe"];//To modularize the validation of upper categories, I went from the src of the dice_elements to an actual number by taking of the 's'. However, sixes' has 'es' at the end, so I included this array 'sixe'.
 const rollCounter = document.getElementById('rolls-remaining-content');
 let isYahtzeeBonus = false;
 
@@ -85,7 +85,17 @@ function disableCategory() {
         isYahtzeeBonus = true;
       }
       if (isGameOver()) {
-        provideFeedback(`Congratulations on finishing the game with a grand total of ${document.getElementById('grand-total').innerHTML} points! I hope you had fun!`, 'good');
+        let finalScore = document.getElementById('grand-total-score-value');
+        finalScore *= 1;
+        if (finalScore >= 254.59) {
+          provideFeedback(`Congratulations on finishing the game with a grand total of ${document.getElementById('grand-total').innerHTML} points! Amazing job!`, 'good');
+        }
+        else if (150 <= finalScore && finalScore < 254.59) {
+          provideFeedback(`You completed the game with a grand total of ${document.getElementById('grand-total').innerHTML} points. Not bad!`, 'good');
+        }
+        else {
+          provideFeedback(`You ended the game with a grand total of ${document.getElementById('grand-total').innerHTML} points. Better luck next time!`, 'bad');
+        }
       }
     }//score was valid
     else {//score was not valid
@@ -114,6 +124,7 @@ function updatesTotals() {
     upperSum += value;
     grandSum += value;
   }
+
   for (let cat of category_ids.lower) {
     let str = cat + '-score-value';
     let value = document.getElementById(str).value;
@@ -121,11 +132,13 @@ function updatesTotals() {
     grandSum += value;
     lowerSum += value;
   }
+
   if (upperSumNoBonus > 63) {
     upperSum += 35;
     grandSum += 35;
     document.getElementById("upper-scorecard-bonus-score").innerHTML = 35;
   }
+
   //only allow yahtzee bonus if they got 50 in yahtzee
   if (isYahtzeeBonus === true && document.getElementById('yahtzee-score-value').disabled === true && document.getElementById('yahtzee-score-value').value === '50' && JSON.stringify(diceContent(diceToArray()).sort()) === JSON.stringify([0,0,0,0,0,5])) {
     let x = document.getElementById('yahtzee-bonus-score-value').innerHTML;
@@ -133,6 +146,7 @@ function updatesTotals() {
     x += 100;
     document.getElementById('yahtzee-bonus-score-value').innerHTML = x;
   }
+
   let yahtzeeBonusScore = document.getElementById('yahtzee-bonus-score-value').innerHTML;
   yahtzeeBonusScore *= 1;
   document.getElementById("upper-scorecard-score").innerHTML = upperSumNoBonus;
@@ -168,7 +182,7 @@ function resetDice() {
     }
     document.getElementById(category + '-suggestion').classList.remove('best-suggestion');//remove best-suggestion class from all categories so that the next best-suggestion may be correctly calculated next move
   }
-}
+}//resetDice
 
 
 
