@@ -1,3 +1,22 @@
+/*
+Akash Kumar, Yahtzee Project, October 2019
+
+EC:
+  1) Yahtzee Bonus
+  2) Suggesting all applicable category totals after each roll (in an additional column)
+  3) Highlight the best suggestion(s) in green.
+  4) Animate dice rolls.
+  5) High score.
+  6) Additional column including expected value for categories so that the user knows whether or not a category's score is relatively good or bad.
+
+Citations:
+  The data used for EC 6 is from https://en.wikipedia.org/wiki/Yahtzee#Optimal_strategy.
+  The CSS for the rainbow-colored title is from https://rainbowcoding.com/2011/12/02/how-to-create-rainbow-text-in-html-css-javascript/.
+
+*/
+
+
+
 console.log("scripts.js loaded!");
 highScore();
 
@@ -35,6 +54,11 @@ for (let id of all_category_ids) {
 
 //-------------------Helper Function Definitions-----------------//
 
+
+/**
+ * Sets die to what the user wants them to be.
+ *
+ */
 function setDice(d1, d2, d3, d4, d5) {
   if (rollCounter.innerHTML <= 0) {
     provideFeedback('You cannot roll the dice more than three times!', 'bad');
@@ -55,6 +79,11 @@ function setDice(d1, d2, d3, d4, d5) {
 }//setDice
 
 
+
+/**
+ * Checks if the dice have been rolled.
+ *
+ */
 function areDiceRolled() {
   for (let die of dice_elements) {
     if (die.getAttribute('src') === 'images/blank.svg' || die.getAttribute('src').substring(0,15) === 'images/spinning') {
@@ -76,7 +105,11 @@ function disableCategory() {
     let id = event.target.id;
     let score = event.target.value;
     if (scoreValidation(id, score) == true) {//score was valid
-      el.disabled = true;
+      el.disabled = true;      for (let cat of all_category_ids) {
+              if (document.getElementById(cat + '-score-value').disabled === false) {
+                document.getElementById(cat + '-score-value').value = '';
+              }
+            }
       provideFeedback('Score was valid!', 'good');
       updatesTotals();
       resetDice();
@@ -85,7 +118,7 @@ function disableCategory() {
         isYahtzeeBonus = true;
       }
       if (isGameOver()) {
-        let finalScore = document.getElementById('grand-total-score-value');
+        let finalScore = document.getElementById('grand-total').innerHTML;
         finalScore *= 1;
         if (finalScore >= 254.59) {
           provideFeedback(`Congratulations on finishing the game with a grand total of ${document.getElementById('grand-total').innerHTML} points! Amazing job!`, 'good');
@@ -96,7 +129,7 @@ function disableCategory() {
         else {
           provideFeedback(`You ended the game with a grand total of ${document.getElementById('grand-total').innerHTML} points. Better luck next time!`, 'bad');
         }
-      }
+      }//gameIsOver
     }//score was valid
     else {//score was not valid
       provideFeedback('Score was not valid!', 'bad');
@@ -374,6 +407,10 @@ function provideFeedback(msg, type) {
 }
 
 
+/**
+ * Used to animate dice roll. Displays spinning images instead of regular.
+ *
+ */
 function animateDice() {
   if (rollCounter.innerText > 0) {
     for (let die of dice_elements) {
@@ -387,7 +424,10 @@ function animateDice() {
 }//animateDice
 
 
-
+/**
+ * Used to animate dice roll. Displays regular images.
+ *
+ */
 function staticDice () {
   if (rollCounter.innerText > 0) {
     for (let die of dice_elements) {
@@ -440,14 +480,14 @@ function rollTheDice() {
  */
 function saveGame() {
   let gameName = document.getElementById('game-name-value').value;
-  if (localStorage.getItem(gameName) !== null) {//error: user's game name has already been used
+  if (gameName === '') {//error: user has not named the game
+    provideFeedback('Please name your game before saving.', 'bad');
+  }
+  else if (localStorage.getItem(gameName) !== null) {//error: user's game name has already been used
     provideFeedback(`The name "${gameName}" has already been used.`, 'bad');
   }
   else if (isGameOver() === true) {//error: user tries to save finished game, which is not allowed
     provideFeedback('You can only save unfinished games.', 'bad');
-  }
-  else if (gameName == '') {//error: user has not named the game
-    provideFeedback('Please name your game before saving.', 'bad');
   }
   else {//user is good to go for saving their game
     let object = {};
@@ -482,52 +522,53 @@ function saveGame() {
  */
 function loadGame() {
   let gameName = document.getElementById('game-name-value').value;
-  let game = JSON.parse(localStorage.getItem(gameName));
-
-  if (game === null) {
-    provideFeedback(`There is no saved game called "${gameName}".`, 'bad');
+  if (gameName === '') {
+    provideFeedback('Please enter the name of the game you wish to load.', 'bad');
   }
   else {
-    newGame();
-    let areDiceRolled = false;
-    for (category in game) {
-      let score = game[category];
-      if (all_category_ids.includes(category)) {//loop through each key-value pair in the game object
-        if (score !== '') {//if there is actually a score
-          document.getElementById(category + '-score-value').value = score;
-          document.getElementById(category + '-score-value').disabled = true;
-        }
-      }
-      if (category === 'rolls-remaining-content') {
-        document.getElementById('rolls-remaining-content').innerHTML = game[category];
-      }
-      if (category.substring(0,3) === 'die' && category.substring(6, category.length) === 'isReserved') {//dice reserved/unreserved
-        let die = document.getElementById(category.substring(0,5));
-        if (die.classList.contains('reserved')) {
-          die.classList.remove('reserved');
-        }
-        if (die.classList.contains('unreserved')) {
-          die.classList.remove('unreserved');
-        }
-        die.classList.add(game[category]);
-      }//dice reserved/unreserved
-      if (category.substring(0,3) === 'die' && category.substring(6, category.length) === 'src') {//dice roll
-        let die = document.getElementById(category.substring(0,5));
-        die.setAttribute('src', game[category]);
-        if (game[category] !== 'images/blank.svg') {//checks if the dice were rolled -- implicitly uses the fact that there are either all blank die or no blank die
-          areDiceRolled = true;
-        }
-      }//dice roll
-      isYahtzeeBonus = game['isYahtzeeBonus'];
-    }//loop through each key-value pair in the game object
-
-    updatesTotals();
-    if (areDiceRolled) {//only suggest scores if the dice have been rolled
-      suggest();
-      bestSuggestion();
+    let game = JSON.parse(localStorage.getItem(gameName));
+    if (game === null) {
+      provideFeedback(`There is no saved game called "${gameName}".`, 'bad');
     }
-    provideFeedback(`You have successfuly loaded a game called "${gameName}"!`, 'good');
-  }//else
+    else {
+      newGame();
+      for (category in game) {
+        let score = game[category];
+        if (all_category_ids.includes(category)) {//loop through each key-value pair in the game object
+          if (score !== '') {//if there is actually a score
+            document.getElementById(category + '-score-value').value = score;
+            document.getElementById(category + '-score-value').disabled = true;
+          }
+        }
+        if (category === 'rolls-remaining-content') {
+          document.getElementById('rolls-remaining-content').innerHTML = game[category];
+        }
+        if (category.substring(0,3) === 'die' && category.substring(6, category.length) === 'isReserved') {//dice reserved/unreserved
+          let die = document.getElementById(category.substring(0,5));
+          if (die.classList.contains('reserved')) {
+            die.classList.remove('reserved');
+          }
+          if (die.classList.contains('unreserved')) {
+            die.classList.remove('unreserved');
+          }
+          die.classList.add(game[category]);
+        }//dice reserved/unreserved
+        if (category.substring(0,3) === 'die' && category.substring(6, category.length) === 'src') {//dice roll
+          let die = document.getElementById(category.substring(0,5));
+          die.setAttribute('src', game[category]);
+        }//dice roll
+        isYahtzeeBonus = game['isYahtzeeBonus'];
+      }//loop through each key-value pair in the game object
+
+      updatesTotals();
+      if (areDiceRolled()) {//only suggest scores if the dice have been rolled
+        suggest();
+        bestSuggestion();
+      }
+      provideFeedback(`You have successfuly loaded a game called "${gameName}"!`, 'good');
+    }//else
+  }//outer else
+
 }//loadGame
 
 
@@ -580,7 +621,10 @@ function reserveDie () {
 }//reserveDie
 
 
-
+/**
+ * Computes and updates the user's high score, utilizing Local Storage.
+ *
+ */
 function highScore() {
   let score = document.getElementById("grand-total").innerHTML;
   score *= 1;
@@ -620,7 +664,10 @@ function isGameOver() {
 
 
 
-
+/**
+ * Suggests possible scores for each unfilled category.
+ *
+ */
 function suggest() {
   let dice = diceToArray();
   for (let i = 0; i < category_ids.upper.length; i++) {
@@ -797,7 +844,10 @@ function suggest() {
 }//suggest
 
 
-
+/**
+ * Highlights the best suggestion(s) green.
+ *
+ */
 function bestSuggestion() {
   let maxScoreSuggestion = 0;
   for (let category of all_category_ids) {
