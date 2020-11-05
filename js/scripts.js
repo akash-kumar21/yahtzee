@@ -403,7 +403,7 @@ function provideFeedback(msg, type) {
   let el = document.getElementById("user-feedback");
   el.classList.remove(...el.classList);//remove all previous classes
   el.classList.add(type);
-  el.innerHTML = msg;
+  document.getElementById("user-feedback-content").innerHTML = msg;
 }
 
 
